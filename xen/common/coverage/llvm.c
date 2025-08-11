@@ -46,7 +46,10 @@
 
 #if __clang_major__ >= 20
 #define LLVM_PROFILE_VERSION    10
-#define LLVM_PROFILE_NUM_KINDS  3
+#define LLVM_PROFILE_NUM_KINDS  3 // ?
+#elif __clang_major__ >= 11
+#define LLVM_PROFILE_VERSION    5
+#define LLVM_PROFILE_NUM_KINDS  2
 #elif __clang_major__ >= 4 || (__clang_major__ == 3 && __clang_minor__ >= 9)
 #define LLVM_PROFILE_VERSION    4
 #define LLVM_PROFILE_NUM_KINDS  2
@@ -76,8 +79,8 @@ struct llvm_profile_data {
     uint64_t value_kind_last;
 };*/
 
-// https://github.com/llvm/llvm-project/blob/llvmorg-20.1.8/compiler-rt/include/profile/InstrProfData.inc#L145
-struct llvm_profile_header {
+// https://github.com/llvm/llvm-project/blob/llvmorg-20.1.8/llvm/include/llvm/ProfileData/InstrProfData.inc#L145
+/* struct llvm_profile_header {
     uint64_t magic;
     uint64_t version;
     uint64_t binary_ids_size;
@@ -93,6 +96,20 @@ struct llvm_profile_header {
     uint64_t names_delta;
     uint64_t num_vtables;
     uint64_t vnames_size;
+    uint64_t value_kind_last;
+};*/
+
+// https://github.com/llvm/llvm-project/blob/llvmorg-11.0.1/llvm/include/llvm/ProfileData/InstrProfData.inc#L123
+struct llvm_profile_header {
+    uint64_t magic;
+    uint64_t version;
+    uint64_t data_size;
+    uint64_t padding_bytes_before_counters;
+    uint64_t counters_size;
+    uint64_t padding_bytes_after_counters;
+    uint64_t names_size;
+    uint64_t counters_delta;
+    uint64_t names_delta;
     uint64_t value_kind_last;
 };
 
@@ -148,7 +165,9 @@ static int cf_check dump(
         .magic = LLVM_PROFILE_MAGIC,
         .version = LLVM_PROFILE_VERSION,
         .data_size = (END_DATA - START_DATA) / sizeof(struct llvm_profile_data),
+        .padding_bytes_before_counters = 0,
         .counters_size = (END_COUNTERS - START_COUNTERS) / sizeof(uint64_t),
+        .padding_bytes_after_counters = 0,
         .names_size = END_NAMES - START_NAMES,
         .counters_delta = (uintptr_t)START_COUNTERS,
         .names_delta = (uintptr_t)START_NAMES,
