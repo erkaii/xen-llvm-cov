@@ -46,23 +46,26 @@
 
 #if __clang_major__ >= 20
 #define LLVM_PROFILE_VERSION    10
-#define LLVM_PROFILE_NUM_KINDS  2
+#define LLVM_PROFILE_NUM_KINDS  3
 #else
 #error "clang version not supported with coverage"
 #endif
 
+// https://github.com/llvm/llvm-project/blob/llvmorg-20.1.8/compiler-rt/include/profile/InstrProfData.inc#L67
 struct llvm_profile_data {
     uint64_t name_ref;
     uint64_t function_hash;
-    void *counter;
+    void *relative_counter;
+    void *relative_bitmap;
     void *function;
     void *values;
     uint32_t nr_counters;
     uint16_t nr_value_sites[LLVM_PROFILE_NUM_KINDS];
+    uint32_t numbitmap_bytes;
 };
 
 
-// https://github.com/llvm/llvm-project/blob/llvmorg-20.1.8/llvm/include/llvm/ProfileData/InstrProfData.inc#L145
+// https://github.com/llvm/llvm-project/blob/llvmorg-20.1.8/compiler-rt/include/profile/InstrProfData.inc#L145
 struct llvm_profile_header {
     uint64_t magic;
     uint64_t version;
