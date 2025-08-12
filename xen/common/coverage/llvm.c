@@ -128,7 +128,7 @@ static int cf_check dump(
         .num_data = (END_DATA - START_DATA) / sizeof(struct llvm_profile_data),
         .num_counters = (END_COUNTERS - START_COUNTERS) / sizeof(uint64_t),
         .names_size = END_NAMES - START_NAMES,
-        .counters_delta = (uintptr_t)START_COUNTERS,
+        .counters_delta = (uintptr_t)(START_COUNTERS - START_DATA),
         .names_delta = (uintptr_t)START_NAMES,
         .value_kind_last = LLVM_PROFILE_NUM_KINDS - 1,
     };
