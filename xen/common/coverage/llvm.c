@@ -118,14 +118,15 @@ static uint32_t cf_check get_size(void)
                    END_COUNTERS - START_COUNTERS + END_NAMES - START_NAMES, 8);
 }
 
+// https://github.com/llvm/llvm-project/blob/llvmorg-20.1.8/llvm/docs/InstrProfileFormat.rst
 static int cf_check dump(
     XEN_GUEST_HANDLE_PARAM(char) buffer, uint32_t *buf_size)
 {
     struct llvm_profile_header header = {
         .magic = LLVM_PROFILE_MAGIC,
         .version = LLVM_PROFILE_VERSION,
-        .data_size = (END_DATA - START_DATA) / sizeof(struct llvm_profile_data),
-        .counters_size = (END_COUNTERS - START_COUNTERS) / sizeof(uint64_t),
+        .num_data = (END_DATA - START_DATA) / sizeof(struct llvm_profile_data),
+        .num_counters = (END_COUNTERS - START_COUNTERS) / sizeof(uint64_t),
         .names_size = END_NAMES - START_NAMES,
         .counters_delta = (uintptr_t)START_COUNTERS,
         .names_delta = (uintptr_t)START_NAMES,
