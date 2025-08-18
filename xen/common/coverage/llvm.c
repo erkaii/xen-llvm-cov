@@ -74,7 +74,7 @@ struct llvm_profile_header {
     uint64_t padding_bytes_before_counters;
     uint64_t num_counters;
     uint64_t padding_bytes_after_counters;
-    uint64_t num_bitmap_bytes;    
+    uint64_t num_bitmap_bytes;
     uint64_t padding_bytes_after_bitmap_bytes;
     uint64_t names_size;
     uint64_t counters_delta;
