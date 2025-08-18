@@ -44,27 +44,37 @@
     ((uint64_t)'f' << 16) | ((uint64_t)'R' << 8)  | ((uint64_t)129)
 #endif
 
-#define LLVM_PROFILE_VERSION    4
-#define LLVM_PROFILE_NUM_KINDS  2
+#define LLVM_PROFILE_VERSION    10
+#define LLVM_PROFILE_NUM_KINDS  3
 
 struct llvm_profile_data {
     uint64_t name_ref;
     uint64_t function_hash;
-    void *counter;
+    void *relative_counter;
+    void *relative_bitmap;
     void *function;
     void *values;
     uint32_t nr_counters;
     uint16_t nr_value_sites[LLVM_PROFILE_NUM_KINDS];
+    uint32_t numbitmap_bytes;
 };
 
 struct llvm_profile_header {
     uint64_t magic;
     uint64_t version;
-    uint64_t data_size;
-    uint64_t counters_size;
+    uint64_t binary_ids_size;
+    uint64_t num_data;
+    uint64_t padding_bytes_before_counters;
+    uint64_t num_counters;
+    uint64_t padding_bytes_after_counters;
+    uint64_t num_bitmap_bytes;
+    uint64_t padding_bytes_after_bitmap_bytes;
     uint64_t names_size;
     uint64_t counters_delta;
+    uint64_t bitmap_delta;
     uint64_t names_delta;
+    uint64_t num_vtables;
+    uint64_t vnames_size;
     uint64_t value_kind_last;
 };
 
@@ -110,7 +120,7 @@ static int cf_check dump(
         .data_size = (END_DATA - START_DATA) / sizeof(struct llvm_profile_data),
         .counters_size = (END_COUNTERS - START_COUNTERS) / sizeof(uint64_t),
         .names_size = END_NAMES - START_NAMES,
-        .counters_delta = (uintptr_t)START_COUNTERS,
+        .counters_delta = (uintptr_t)(START_COUNTERS - START_DATA),
         .names_delta = (uintptr_t)START_NAMES,
         .value_kind_last = LLVM_PROFILE_NUM_KINDS - 1,
     };
